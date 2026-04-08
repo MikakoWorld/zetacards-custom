@@ -46,7 +46,8 @@ imageCache.set(src,p);
 return p
 }
 function roundRect(ctx,x,y,w,h,r,fill=true,stroke=false){const rr=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+rr,y);ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath();if(fill)ctx.fill();if(stroke)ctx.stroke()}
-function drawImageCover(ctx,img,x,y,w,h,r=0){if(!img)return;const imgRatio=img.width/img.height,boxRatio=w/h;let sx,sy,sw,sh;if(imgRatio>boxRatio){sh=img.height;sw=sh*boxRatio;sx=(img.width-sw)/2;sy=0}else{sw=img.width;sh=sw/boxRatio;sx=0;sy=(img.height-sh)/2}ctx.save();if(r>0){roundRect(ctx,x,y,w,h,r,false,false);ctx.clip()}ctx.drawImage(img,sx,sy,sw,sh,x,y,w,h);ctx.restore()}
+function applyImageQuality(ctx){ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high'}
+function drawImageCover(ctx,img,x,y,w,h,r=0){if(!img)return;const imgRatio=img.width/img.height,boxRatio=w/h;let sx,sy,sw,sh;if(imgRatio>boxRatio){sh=img.height;sw=sh*boxRatio;sx=(img.width-sw)/2;sy=0}else{sw=img.width;sh=sw/boxRatio;sx=0;sy=(img.height-sh)/2}ctx.save();applyImageQuality(ctx);if(r>0){roundRect(ctx,x,y,w,h,r,false,false);ctx.clip()}ctx.drawImage(img,sx,sy,sw,sh,x,y,w,h);ctx.restore()}
 function pct(total,p){return total*(p/100)}
 function boxByPercent(w,h,l,t,bw,bh){return{x:pct(w,l),y:pct(h,t),w:pct(w,bw),h:pct(h,bh)}}
 function wrapText(ctx,text,maxWidth){const raw=String(text).split('\n'),lines=[];raw.forEach(line=>{if(!line){lines.push('');return}let buf='';for(const ch of line){const test=buf+ch;if(ctx.measureText(test).width>maxWidth&&buf){lines.push(buf);buf=ch}else buf=test}if(buf)lines.push(buf)});return lines}
@@ -57,6 +58,7 @@ function drawBubbleField(ctx,x,y,w,h,label,value){ctx.save();ctx.fillStyle='#fff
 async function drawOshiCard(ctx,{index,x,y,w,h}){const img=await loadImage(state.profile[`oshi${index}Image`]),name=state.profile[`oshi${index}Name`],desc=state.profile[`oshi${index}Desc`];ctx.save();ctx.fillStyle='#fff';ctx.strokeStyle='#ddd4ff';ctx.lineWidth=3;roundRect(ctx,x,y,w,h,28,true,true);const imageHeight=238;ctx.fillStyle='#f3efff';roundRect(ctx,x+18,y+18,w-36,imageHeight,22,true,false);drawImageCover(ctx,img,x+18,y+18,w-36,imageHeight,22);ctx.fillStyle='#efeafd';roundRect(ctx,x+24,y+274,w-48,52,18,true,false);drawContainedText(ctx,name,{x:x+26,y:y+278,w:w-52,h:44},{maxFontSize:28,minFontSize:16,align:'center',valign:'middle',color:'#5a4bb8'});drawContainedText(ctx,desc,{x:x+22,y:y+344,w:w-44,h:h-366},{maxFontSize:24,minFontSize:15,lineHeight:1.5});ctx.restore()}
 async function renderProfileCard(ctx,w,h){
 ctx.clearRect(0,0,w,h);
+applyImageQuality(ctx);
 const base=await loadImage(TEMPLATE_IMAGES.profile);
 if(base)ctx.drawImage(base,0,0,w,h);
 const profileImage=await loadImage(state.profile.profileImage);
@@ -76,6 +78,7 @@ drawContainedText(ctx,state.profile[`oshi${slot.n}Desc`],boxByPercent(w,h,...slo
 }
 async function renderQuestionCard(ctx,w,h){
 ctx.clearRect(0,0,w,h);
+applyImageQuality(ctx);
 const base=await loadImage(TEMPLATE_IMAGES.question);
 if(base)ctx.drawImage(base,0,0,w,h);
 drawContainedText(ctx,state.question.firstCharacter,boxByPercent(w,h,9,13.8,38,4.8),{maxFontSize:39,minFontSize:18,valign:'middle',paddingX:8});
@@ -86,5 +89,5 @@ drawContainedText(ctx,state.question.freeSpace,boxByPercent(w,h,11,47,73,47.4),{
 }
 async function renderCard(ctx,w,h){ctx.clearRect(0,0,w,h);if(state.activeTemplate==='profile')await renderProfileCard(ctx,w,h);else await renderQuestionCard(ctx,w,h)}
 async function buildExportCanvas(){const c=createCanvas(EXPORT_WIDTH,EXPORT_HEIGHT);await renderCard(c.getContext('2d'),EXPORT_WIDTH,EXPORT_HEIGHT);return c}
-async function renderPreview(){previewSizeLabel.textContent=`出力 ${EXPORT_WIDTH} × ${EXPORT_HEIGHT}`;try{await renderCard(previewCanvas.getContext('2d'),previewCanvas.width,previewCanvas.height)}catch(e){console.error(e)}}
+async function renderPreview(){previewSizeLabel.textContent=`出力 ${EXPORT_WIDTH} × ${EXPORT_HEIGHT}`;const dpr=Math.min(window.devicePixelRatio||1,2);const canvasW=Math.round(EXPORT_WIDTH*dpr),canvasH=Math.round(EXPORT_HEIGHT*dpr);if(previewCanvas.width!==canvasW||previewCanvas.height!==canvasH){previewCanvas.width=canvasW;previewCanvas.height=canvasH}const ctx=previewCanvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);try{await renderCard(ctx,EXPORT_WIDTH,EXPORT_HEIGHT)}catch(e){console.error(e)}}
 loadState();applyPresetFromWindow();fillForms();setTemplate(state.activeTemplate);renderPreview();
