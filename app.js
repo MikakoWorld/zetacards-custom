@@ -63,7 +63,7 @@ for(const slot of[{n:1,img:[14.2,46.25,24.1,16.15],name:[16.5,64,19.4,3.1],desc:
 const img=await loadImage(state.profile[`oshi${slot.n}Image`]);
 drawImageCover(ctx,img,...Object.values(boxByPercent(w,h,...slot.img)),6);
 drawContainedText(ctx,state.profile[`oshi${slot.n}Name`],boxByPercent(w,h,...slot.name),{maxFontSize:30,minFontSize:14,align:'center',valign:'middle',noWrap:true});
-drawContainedText(ctx,state.profile[`oshi${slot.n}Desc`],boxByPercent(w,h,...slot.desc),{maxFontSize:18,minFontSize:11,lineHeight:1.4,paddingX:6,paddingY:6});
+drawContainedText(ctx,state.profile[`oshi${slot.n}Desc`],boxByPercent(w,h,...slot.desc),{maxFontSize:22,minFontSize:13,lineHeight:1.4,paddingX:6,paddingY:6});
 }
 }
 async function renderQuestionCard(ctx,w,h){
