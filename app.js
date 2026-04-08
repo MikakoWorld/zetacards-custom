@@ -17,7 +17,6 @@ tabs.forEach(tab=>tab.addEventListener('click',()=>setTemplate(tab.dataset.templ
 questionForm.addEventListener('input',e=>{const {name,value}=e.target;state.question[name]=value;persist();renderPreview()});
 profileForm.addEventListener('input',async e=>{const {name,value,type,files}=e.target;if(type==='file'){const file=files?.[0];if(!file)return;state.profile[name]=await readFileAsDataURL(file);imageCache.delete(state.profile[name]);persist();renderPreview();return}state.profile[name]=value;persist();renderPreview()});
 if(fontColorInput)fontColorInput.addEventListener('input',e=>{state.style.fontColor=e.target.value||'#23233a';updateColorPreview();persist();renderPreview()});
-if(fontColorButton&&fontColorInput)fontColorButton.addEventListener('click',()=>fontColorInput.click());
 if(fontFamilySelect)fontFamilySelect.addEventListener('change',e=>{state.style.fontFamily=e.target.value||'maru';updateColorPreview();persist();renderPreview()});
 resetBtn.addEventListener('click',()=>{if(!confirm('入力内容を消しますか？'))return;localStorage.removeItem('zeta-cards-custom');window.location.reload()});
 downloadBtn.addEventListener('click',async()=>{try{const canvas=await buildExportCanvas();await saveCanvas(canvas,`zeta-card-${state.activeTemplate}.png`)}catch(e){console.error(e);alert('保存に失敗しました。')}})
