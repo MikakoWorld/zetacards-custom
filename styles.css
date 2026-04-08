@@ -2,6 +2,7 @@
 
 body.modal-open{overflow:hidden}
 .ios-save-modal{position:fixed;inset:0;z-index:9999;background:rgba(12,10,24,.72);padding:0;display:flex;align-items:stretch;justify-content:center}
+.ios-save-modal.hidden{display:none!important}
 .ios-save-modal-inner{width:min(100vw,900px);height:100vh;background:#111;display:flex;flex-direction:column;padding:12px 12px 16px}
 .ios-save-close{align-self:flex-end;border:0;border-radius:10px;padding:10px 14px;background:#ffffff22;color:#fff;font:700 14px/1 "Hiragino Sans","Yu Gothic",sans-serif}
 .ios-save-modal h3{margin:10px 0 6px;color:#fff;font-size:1rem}
