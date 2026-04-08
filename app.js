@@ -56,10 +56,10 @@ drawImageCover(ctx,profileImage,...Object.values(boxByPercent(w,h,11.4,9,25,20))
 drawContainedText(ctx,state.profile.name,boxByPercent(w,h,65.6,11.1,25.3,3.7),{maxFontSize:35,minFontSize:15,valign:'middle',noWrap:true,paddingX:6});
 drawContainedText(ctx,state.profile.xId,boxByPercent(w,h,65.6,15.35,25.3,3.7),{maxFontSize:35,minFontSize:15,valign:'middle',noWrap:true,paddingX:6});
 drawContainedText(ctx,state.profile.zetaHistory,boxByPercent(w,h,65.6,19.55,25.3,3.4),{maxFontSize:35,minFontSize:15,valign:'middle',noWrap:true,paddingX:6});
-drawContainedText(ctx,state.profile.creatorId,boxByPercent(w,h,71.8,23.85,19.1,3.8),{maxFontSize:31,minFontSize:14,valign:'middle',noWrap:true,paddingX:6});
+drawContainedText(ctx,state.profile.creatorId,boxByPercent(w,h,70.8,23.85,20.1,3.8),{maxFontSize:31,minFontSize:14,valign:'middle',noWrap:true,paddingX:6});
 drawContainedText(ctx,state.profile.nickname,boxByPercent(w,h,13,30.55,32,3.05),{maxFontSize:32,minFontSize:15,align:'center',valign:'middle',noWrap:true,paddingX:8});
 drawContainedText(ctx,state.profile.favoriteThing,boxByPercent(w,h,37,34.5,32,3),{maxFontSize:32,minFontSize:15,align:'center',valign:'middle',noWrap:true,paddingX:8});
-for(const slot of[{n:1,img:[14.2,46.25,24.1,16.15],name:[16.5,64,19.4,3.1],desc:[14.5,68.8,24,27.4]},{n:2,img:[41.8,46.25,24.1,16.15],name:[44.2,64,19.4,3.1],desc:[42,68.8,24,27.4]},{n:3,img:[68.7,46.25,24.1,16.15],name:[71.8,64,19.4,3.1],desc:[69.5,68.8,24,27.4]}]){
+for(const slot of[{n:1,img:[14.2,46.25,24.1,16.15],name:[16.5,64,19.4,3.1],desc:[15.2,68.8,22.6,27.4]},{n:2,img:[41.8,46.25,24.1,16.15],name:[44.2,64,19.4,3.1],desc:[42.7,68.8,22.6,27.4]},{n:3,img:[68.7,46.25,24.1,16.15],name:[71.8,64,19.4,3.1],desc:[70.2,68.8,22.6,27.4]}]){
 const img=await loadImage(state.profile[`oshi${slot.n}Image`]);
 drawImageCover(ctx,img,...Object.values(boxByPercent(w,h,...slot.img)),6);
 drawContainedText(ctx,state.profile[`oshi${slot.n}Name`],boxByPercent(w,h,...slot.name),{maxFontSize:30,minFontSize:14,align:'center',valign:'middle',noWrap:true});
