@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>zeta cards custom - test</title>
+  <meta name="description" content="入力済みテストデータ付きの zeta カードメーカー">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    window.ZETA_DISABLE_PERSIST = true;
+    window.ZETA_PRESET = {
+      activeTemplate: 'profile',
+      profile: {
+        name: 'テスト太郎',
+        xId: '@zeta_test',
+        zetaHistory: '2024年秋から',
+        creatorId: 'creator_test_001',
+        nickname: 'たろちゃん',
+        favoriteThing: 'ラーメンとゲーム',
+        profileImage: 'https://placehold.jp/3d4070/ffffff/600x800.png?text=PROFILE',
+        oshi1Name: '推しキャラA',
+        oshi2Name: '推しキャラB',
+        oshi3Name: '推しキャラC',
+        oshi1Desc: '元気いっぱいで見ているだけで楽しいところが好きです。',
+        oshi2Desc: 'セリフ回しと表情の変化が最高で、ずっと追いかけています。',
+        oshi3Desc: '配信の空気感が心地よく、作業のお供にいつも見ています。',
+        oshi1Image: 'https://placehold.jp/e67e22/ffffff/600x600.png?text=OSHI1',
+        oshi2Image: 'https://placehold.jp/16a085/ffffff/600x600.png?text=OSHI2',
+        oshi3Image: 'https://placehold.jp/8e44ad/ffffff/600x600.png?text=OSHI3'
+      },
+      question: {
+        firstCharacter: 'テストキャラちゃん',
+        featureRequest: '検索結果をタグで絞り込みできるようにしてほしいです。',
+        reasonStarted: '友だちにすすめられて、推し投稿を追いやすかったから。',
+        messageToOps: 'いつも運営ありがとうございます。表示速度の改善も期待しています。',
+        freeSpace: 'ここは自由入力欄です。告知、感想、自己紹介の補足など、長文テストに使ってください。'
+      }
+    };
+  </script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div><h1>zeta cards custom (test)</h1><p>入力済みデータで動作確認するページ</p></div>
+  </header>
+  <main class="layout">
+    <section class="panel controls">
+      <div class="segmented" role="tablist" aria-label="カード切り替え">
+        <button class="tab is-active" data-template="profile" aria-selected="true" type="button">自己紹介カード</button>
+        <button class="tab" data-template="question" aria-selected="false" type="button">質問カード</button>
+      </div>
+      <form id="profile-form" class="form-section">
+        <h2>自己紹介カード</h2>
+        <label>プロフィール画像<input type="file" accept="image/*" name="profileImage"><small>縦長寄り推奨。Canvas 側で cover 表示します。</small></label>
+        <label>なまえ<input name="name" maxlength="24" placeholder="例：ひかり"></label>
+        <label>X ID<input name="xId" maxlength="32" placeholder="例：@hikari_zeta"></label>
+        <label>zeta歴<input name="zetaHistory" maxlength="28" placeholder="例：2024年冬から"></label>
+        <label>クリエイターID<input name="creatorId" maxlength="28" placeholder="例：creator_1234"></label>
+        <label>「○○って呼んでね」<input name="nickname" maxlength="18" placeholder="例：ひかるん"></label>
+        <label>好きなものは ○○ だよ♡<input name="favoriteThing" maxlength="24" placeholder="例：アニメとカフェ巡り"></label>
+        <div class="upload-grid">
+          <fieldset><legend>推しキャラ1</legend><label>画像<input type="file" accept="image/*" name="oshi1Image"></label><label>名前<input name="oshi1Name" maxlength="22" placeholder="例：○○"></label><label>説明<textarea name="oshi1Desc" maxlength="180" rows="4" placeholder="好きな理由など"></textarea></label></fieldset>
+          <fieldset><legend>推しキャラ2</legend><label>画像<input type="file" accept="image/*" name="oshi2Image"></label><label>名前<input name="oshi2Name" maxlength="22" placeholder="例：○○"></label><label>説明<textarea name="oshi2Desc" maxlength="180" rows="4" placeholder="好きな理由など"></textarea></label></fieldset>
+          <fieldset><legend>推しキャラ3</legend><label>画像<input type="file" accept="image/*" name="oshi3Image"></label><label>名前<input name="oshi3Name" maxlength="22" placeholder="例：○○"></label><label>説明<textarea name="oshi3Desc" maxlength="180" rows="4" placeholder="好きな理由など"></textarea></label></fieldset>
+        </div>
+      </form>
+      <form id="question-form" class="form-section hidden">
+        <h2>質問カード</h2>
+        <label>初めて話したキャラは？<input name="firstCharacter" maxlength="36" placeholder="例：○○ちゃん"></label>
+        <label>zetaに欲しい新機能は？<textarea name="featureRequest" rows="3" maxlength="120" placeholder="例：検索強化、画像まとめ、通知改善"></textarea></label>
+        <label>zetaを始めたきっかけ<textarea name="reasonStarted" rows="3" maxlength="120" placeholder="例：推しの投稿を追いやすそうだったから"></textarea></label>
+        <label>運営に一言🥺<textarea name="messageToOps" rows="3" maxlength="120" placeholder="例：いつもありがとうございます！"></textarea></label>
+        <label>FREE SPACE<textarea name="freeSpace" rows="8" maxlength="500" placeholder="自由記入。感想、推し語り、告知など"></textarea></label>
+      </form>
+      <div class="actions">
+        <button id="download-btn" type="button">PNGで保存</button>
+        <button id="ios-btn" type="button" class="secondary">iPhoneで保存しやすくする</button>
+        <button id="reset-btn" type="button" class="ghost">入力をリセット</button>
+      </div>
+      <details class="notes"><summary>使い方</summary><ol><li>フォームに入力すると Canvas プレビューへ即反映</li><li>PNGで保存は PC / Android 向け</li><li>iPhone は「iPhoneで保存しやすくする」で下に PNG を出し、長押し保存</li></ol></details>
+    </section>
+    <section class="panel preview-panel">
+      <div class="preview-card-shell">
+        <div class="preview-toolbar"><span id="preview-size-label">出力 1200 × 1700</span></div>
+        <div class="canvas-wrap"><canvas id="preview-canvas" width="1200" height="1700" aria-label="カードプレビュー"></canvas></div>
+      </div>
+      <section id="ios-save-area" class="ios-save-area hidden" aria-live="polite"><h3>iPhone 保存用画像</h3><p>下の画像を長押しして「写真に保存」を選んでください。</p><img id="ios-save-image" alt="保存用PNG"></section>
+    </section>
+  </main>
+</body></html>

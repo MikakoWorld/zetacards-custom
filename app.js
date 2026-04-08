@@ -1,11 +1,13 @@
 
 const EXPORT_WIDTH=1200,EXPORT_HEIGHT=1700;
 const state={activeTemplate:'profile',question:{firstCharacter:'',featureRequest:'',reasonStarted:'',messageToOps:'',freeSpace:''},profile:{name:'',xId:'',zetaHistory:'',creatorId:'',nickname:'',favoriteThing:'',profileImage:'',oshi1Name:'',oshi2Name:'',oshi3Name:'',oshi1Desc:'',oshi2Desc:'',oshi3Desc:'',oshi1Image:'',oshi2Image:'',oshi3Image:''}};
+const DISABLE_PERSIST=Boolean(window.ZETA_DISABLE_PERSIST);
 const tabs=document.querySelectorAll('.tab'),questionForm=document.getElementById('question-form'),profileForm=document.getElementById('profile-form'),previewCanvas=document.getElementById('preview-canvas'),previewSizeLabel=document.getElementById('preview-size-label'),downloadBtn=document.getElementById('download-btn'),iosBtn=document.getElementById('ios-btn'),resetBtn=document.getElementById('reset-btn'),iosSaveArea=document.getElementById('ios-save-area'),iosSaveImage=document.getElementById('ios-save-image');
 const imageCache=new Map();
 const qs=(s,r=document)=>r.querySelector(s);
-function persist(){localStorage.setItem('zeta-cards-custom',JSON.stringify(state))}
-function loadState(){const raw=localStorage.getItem('zeta-cards-custom');if(!raw)return;try{const saved=JSON.parse(raw);Object.assign(state.question,saved.question||{});Object.assign(state.profile,saved.profile||{});state.activeTemplate=saved.activeTemplate||'profile'}catch(e){console.warn(e)}}
+function persist(){if(DISABLE_PERSIST)return;localStorage.setItem('zeta-cards-custom',JSON.stringify(state))}
+function loadState(){if(DISABLE_PERSIST)return;const raw=localStorage.getItem('zeta-cards-custom');if(!raw)return;try{const saved=JSON.parse(raw);Object.assign(state.question,saved.question||{});Object.assign(state.profile,saved.profile||{});state.activeTemplate=saved.activeTemplate||'profile'}catch(e){console.warn(e)}}
+function applyPresetFromWindow(){const preset=window.ZETA_PRESET;if(!preset)return;Object.assign(state.question,preset.question||{});Object.assign(state.profile,preset.profile||{});if(preset.activeTemplate)state.activeTemplate=preset.activeTemplate}
 function fillForms(){Object.entries(state.question).forEach(([k,v])=>{const el=questionForm.elements.namedItem(k);if(el)el.value=v});Object.entries(state.profile).forEach(([k,v])=>{const el=profileForm.elements.namedItem(k);if(el&&el.type!=='file')el.value=v})}
 function setTemplate(t){state.activeTemplate=t;tabs.forEach(tab=>{const a=tab.dataset.template===t;tab.classList.toggle('is-active',a);tab.setAttribute('aria-selected',String(a))});questionForm.classList.toggle('hidden',t!=='question');profileForm.classList.toggle('hidden',t!=='profile');persist();renderPreview()}
 tabs.forEach(tab=>tab.addEventListener('click',()=>setTemplate(tab.dataset.template)));
@@ -20,7 +22,7 @@ function isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator
 function canvasToBlob(canvas){return new Promise(res=>canvas.toBlob(b=>res(b),'image/png'))}
 async function saveCanvas(canvas,filename){const blob=await canvasToBlob(canvas);if(!blob)throw new Error('PNG化に失敗');const file=new File([blob],filename,{type:'image/png'});if(isIOS()&&navigator.share&&navigator.canShare?.({files:[file]})){await navigator.share({files:[file],title:filename});return}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function createCanvas(w=EXPORT_WIDTH,h=EXPORT_HEIGHT){const c=document.createElement('canvas');c.width=w;c.height=h;return c}
-async function loadImage(src){if(!src)return null;if(imageCache.has(src))return imageCache.get(src);const p=new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src});imageCache.set(src,p);return p}
+async function loadImage(src){if(!src)return null;if(imageCache.has(src))return imageCache.get(src);const p=new Promise((res,rej)=>{const i=new Image();if(!String(src).startsWith('data:'))i.crossOrigin='anonymous';i.onload=()=>res(i);i.onerror=rej;i.src=src});imageCache.set(src,p);return p}
 function roundRect(ctx,x,y,w,h,r,fill=true,stroke=false){const rr=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+rr,y);ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath();if(fill)ctx.fill();if(stroke)ctx.stroke()}
 function drawImageCover(ctx,img,x,y,w,h,r=0){if(!img)return;const imgRatio=img.width/img.height,boxRatio=w/h;let sx,sy,sw,sh;if(imgRatio>boxRatio){sh=img.height;sw=sh*boxRatio;sx=(img.width-sw)/2;sy=0}else{sw=img.width;sh=sw/boxRatio;sx=0;sy=(img.height-sh)/2}ctx.save();if(r>0){roundRect(ctx,x,y,w,h,r,false,false);ctx.clip()}ctx.drawImage(img,sx,sy,sw,sh,x,y,w,h);ctx.restore()}
 function wrapText(ctx,text,maxWidth){const raw=String(text).split('\n'),lines=[];raw.forEach(line=>{if(!line){lines.push('');return}let buf='';for(const ch of line){const test=buf+ch;if(ctx.measureText(test).width>maxWidth&&buf){lines.push(buf);buf=ch}else buf=test}if(buf)lines.push(buf)});return lines}
@@ -34,4 +36,4 @@ async function renderQuestionCard(ctx,w,h){ctx.fillStyle='#f7f4ff';ctx.fillRect(
 async function renderCard(ctx,w,h){ctx.clearRect(0,0,w,h);if(state.activeTemplate==='profile')await renderProfileCard(ctx,w,h);else await renderQuestionCard(ctx,w,h)}
 async function buildExportCanvas(){const c=createCanvas(EXPORT_WIDTH,EXPORT_HEIGHT);await renderCard(c.getContext('2d'),EXPORT_WIDTH,EXPORT_HEIGHT);return c}
 async function renderPreview(){previewSizeLabel.textContent=`出力 ${EXPORT_WIDTH} × ${EXPORT_HEIGHT}`;await renderCard(previewCanvas.getContext('2d'),previewCanvas.width,previewCanvas.height)}
-loadState();fillForms();setTemplate(state.activeTemplate);renderPreview();
+loadState();applyPresetFromWindow();fillForms();setTemplate(state.activeTemplate);renderPreview();

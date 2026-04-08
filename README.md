@@ -10,3 +10,7 @@ Canvas ベースで再構築したカードメーカーです。
 
 ## 公開
 GitHub Pages で `main` / root を公開元にするとそのまま動きます。
+
+## テストページ
+- 通常ページ: `index.html`
+- 入力済みテストページ: `test.html`
