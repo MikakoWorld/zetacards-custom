@@ -53,28 +53,28 @@ const base=await loadImage(TEMPLATE_IMAGES.profile);
 if(base)ctx.drawImage(base,0,0,w,h);
 const profileImage=await loadImage(state.profile.profileImage);
 drawImageCover(ctx,profileImage,...Object.values(boxByPercent(w,h,11.4,9,25,20)),28);
-drawContainedText(ctx,state.profile.name,boxByPercent(w,h,65.6,11.1,25.3,3.7),{maxFontSize:38,minFontSize:16,valign:'middle',noWrap:true});
-drawContainedText(ctx,state.profile.xId,boxByPercent(w,h,65.6,15.35,25.3,3.7),{maxFontSize:38,minFontSize:16,valign:'middle',noWrap:true});
-drawContainedText(ctx,state.profile.zetaHistory,boxByPercent(w,h,65.6,19.55,25.3,3.4),{maxFontSize:38,minFontSize:16,valign:'middle',noWrap:true});
-drawContainedText(ctx,state.profile.creatorId,boxByPercent(w,h,73.0,23.85,17.9,3.8),{maxFontSize:34,minFontSize:14,valign:'middle',noWrap:true});
-drawContainedText(ctx,state.profile.nickname,boxByPercent(w,h,13,30.55,32,3.05),{maxFontSize:34,minFontSize:16,align:'center',valign:'middle',noWrap:true});
-drawContainedText(ctx,state.profile.favoriteThing,boxByPercent(w,h,37,34.5,32,3),{maxFontSize:34,minFontSize:16,align:'center',valign:'middle',noWrap:true});
-for(const slot of[{n:1,img:[14,46.1,24.5,16.5],name:[16.5,64,19.4,3.1],desc:[14.5,68.8,24,27.4]},{n:2,img:[41.6,46.1,24.5,16.5],name:[44.2,64,19.4,3.1],desc:[42,68.8,24,27.4]},{n:3,img:[68.5,46.1,24.5,16.5],name:[71.8,64,19.4,3.1],desc:[69.5,68.8,24,27.4]}]){
+drawContainedText(ctx,state.profile.name,boxByPercent(w,h,65.6,11.1,25.3,3.7),{maxFontSize:35,minFontSize:15,valign:'middle',noWrap:true,paddingX:6});
+drawContainedText(ctx,state.profile.xId,boxByPercent(w,h,65.6,15.35,25.3,3.7),{maxFontSize:35,minFontSize:15,valign:'middle',noWrap:true,paddingX:6});
+drawContainedText(ctx,state.profile.zetaHistory,boxByPercent(w,h,65.6,19.55,25.3,3.4),{maxFontSize:35,minFontSize:15,valign:'middle',noWrap:true,paddingX:6});
+drawContainedText(ctx,state.profile.creatorId,boxByPercent(w,h,71.8,23.85,19.1,3.8),{maxFontSize:31,minFontSize:14,valign:'middle',noWrap:true,paddingX:6});
+drawContainedText(ctx,state.profile.nickname,boxByPercent(w,h,13,30.55,32,3.05),{maxFontSize:32,minFontSize:15,align:'center',valign:'middle',noWrap:true,paddingX:8});
+drawContainedText(ctx,state.profile.favoriteThing,boxByPercent(w,h,37,34.5,32,3),{maxFontSize:32,minFontSize:15,align:'center',valign:'middle',noWrap:true,paddingX:8});
+for(const slot of[{n:1,img:[14.2,46.25,24.1,16.15],name:[16.5,64,19.4,3.1],desc:[14.5,68.8,24,27.4]},{n:2,img:[41.8,46.25,24.1,16.15],name:[44.2,64,19.4,3.1],desc:[42,68.8,24,27.4]},{n:3,img:[68.7,46.25,24.1,16.15],name:[71.8,64,19.4,3.1],desc:[69.5,68.8,24,27.4]}]){
 const img=await loadImage(state.profile[`oshi${slot.n}Image`]);
 drawImageCover(ctx,img,...Object.values(boxByPercent(w,h,...slot.img)),6);
 drawContainedText(ctx,state.profile[`oshi${slot.n}Name`],boxByPercent(w,h,...slot.name),{maxFontSize:30,minFontSize:14,align:'center',valign:'middle',noWrap:true});
-drawContainedText(ctx,state.profile[`oshi${slot.n}Desc`],boxByPercent(w,h,...slot.desc),{maxFontSize:15,minFontSize:9,lineHeight:1.4,paddingX:3,paddingY:4});
+drawContainedText(ctx,state.profile[`oshi${slot.n}Desc`],boxByPercent(w,h,...slot.desc),{maxFontSize:18,minFontSize:11,lineHeight:1.4,paddingX:6,paddingY:6});
 }
 }
 async function renderQuestionCard(ctx,w,h){
 ctx.clearRect(0,0,w,h);
 const base=await loadImage(TEMPLATE_IMAGES.question);
 if(base)ctx.drawImage(base,0,0,w,h);
-drawContainedText(ctx,state.question.firstCharacter,boxByPercent(w,h,9,13.8,38,4.8),{maxFontSize:42,minFontSize:20,valign:'middle'});
-drawContainedText(ctx,state.question.featureRequest,boxByPercent(w,h,9,23,38,13),{maxFontSize:34,minFontSize:16,lineHeight:1.4});
-drawContainedText(ctx,state.question.reasonStarted,boxByPercent(w,h,53,13.6,32.2,10.2),{maxFontSize:34,minFontSize:16,lineHeight:1.4});
-drawContainedText(ctx,state.question.messageToOps,boxByPercent(w,h,53.5,28.8,32,7.5),{maxFontSize:34,minFontSize:16,lineHeight:1.4});
-drawContainedText(ctx,state.question.freeSpace,boxByPercent(w,h,11,47,73,47.4),{maxFontSize:28,minFontSize:14,lineHeight:1.45});
+drawContainedText(ctx,state.question.firstCharacter,boxByPercent(w,h,9,13.8,38,4.8),{maxFontSize:39,minFontSize:18,valign:'middle',paddingX:8});
+drawContainedText(ctx,state.question.featureRequest,boxByPercent(w,h,9,23,38,13),{maxFontSize:31,minFontSize:14,lineHeight:1.35,paddingX:8,paddingY:8});
+drawContainedText(ctx,state.question.reasonStarted,boxByPercent(w,h,53,13.6,32.2,10.2),{maxFontSize:31,minFontSize:14,lineHeight:1.35,paddingX:8,paddingY:8});
+drawContainedText(ctx,state.question.messageToOps,boxByPercent(w,h,53.5,28.8,32,7.5),{maxFontSize:30,minFontSize:13,lineHeight:1.35,paddingX:8,paddingY:8});
+drawContainedText(ctx,state.question.freeSpace,boxByPercent(w,h,11,47,73,47.4),{maxFontSize:25,minFontSize:13,lineHeight:1.42,paddingX:12,paddingY:10});
 }
 async function renderCard(ctx,w,h){ctx.clearRect(0,0,w,h);if(state.activeTemplate==='profile')await renderProfileCard(ctx,w,h);else await renderQuestionCard(ctx,w,h)}
 async function buildExportCanvas(){const c=createCanvas(EXPORT_WIDTH,EXPORT_HEIGHT);await renderCard(c.getContext('2d'),EXPORT_WIDTH,EXPORT_HEIGHT);return c}
