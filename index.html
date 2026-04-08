@@ -25,10 +25,11 @@
           <option value="mincho">明朝</option>
         </select>
       </label>
-      <label>文字色
-        <input id="font-color-input" type="color" value="#23233a">
-        <div id="font-color-preview" class="font-color-preview">表示例</div>
-      </label>
+      <div class="color-control">
+        <button id="font-color-button" class="color-button" type="button">文字色</button>
+        <input id="font-color-input" class="hidden-color-input" type="color" value="#23233a" aria-label="文字色を選ぶ">
+      </div>
+      <div id="font-color-preview" class="font-color-preview">表示例</div>
       <form id="profile-form" class="form-section">
         <h2>自己紹介カード</h2>
         <label>プロフィール画像<input type="file" accept="image/*" name="profileImage"><small>縦長寄り推奨。Canvas 側で cover 表示します。</small></label>
