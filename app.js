@@ -22,7 +22,19 @@ function isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator
 function canvasToBlob(canvas){return new Promise(res=>canvas.toBlob(b=>res(b),'image/png'))}
 async function saveCanvas(canvas,filename){const blob=await canvasToBlob(canvas);if(!blob)throw new Error('PNG化に失敗');const file=new File([blob],filename,{type:'image/png'});if(isIOS()&&navigator.share&&navigator.canShare?.({files:[file]})){await navigator.share({files:[file],title:filename});return}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function createCanvas(w=EXPORT_WIDTH,h=EXPORT_HEIGHT){const c=document.createElement('canvas');c.width=w;c.height=h;return c}
-async function loadImage(src){if(!src)return null;if(imageCache.has(src))return imageCache.get(src);const p=new Promise((res,rej)=>{const i=new Image();if(!String(src).startsWith('data:'))i.crossOrigin='anonymous';i.onload=()=>res(i);i.onerror=rej;i.src=src});imageCache.set(src,p);return p}
+async function loadImage(src){
+if(!src)return null;
+if(imageCache.has(src))return imageCache.get(src);
+const p=new Promise(res=>{
+const i=new Image();
+if(!String(src).startsWith('data:'))i.crossOrigin='anonymous';
+i.onload=()=>res(i);
+i.onerror=()=>{console.warn('image load failed',src);res(null)};
+i.src=src
+});
+imageCache.set(src,p);
+return p
+}
 function roundRect(ctx,x,y,w,h,r,fill=true,stroke=false){const rr=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+rr,y);ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath();if(fill)ctx.fill();if(stroke)ctx.stroke()}
 function drawImageCover(ctx,img,x,y,w,h,r=0){if(!img)return;const imgRatio=img.width/img.height,boxRatio=w/h;let sx,sy,sw,sh;if(imgRatio>boxRatio){sh=img.height;sw=sh*boxRatio;sx=(img.width-sw)/2;sy=0}else{sw=img.width;sh=sw/boxRatio;sx=0;sy=(img.height-sh)/2}ctx.save();if(r>0){roundRect(ctx,x,y,w,h,r,false,false);ctx.clip()}ctx.drawImage(img,sx,sy,sw,sh,x,y,w,h);ctx.restore()}
 function wrapText(ctx,text,maxWidth){const raw=String(text).split('\n'),lines=[];raw.forEach(line=>{if(!line){lines.push('');return}let buf='';for(const ch of line){const test=buf+ch;if(ctx.measureText(test).width>maxWidth&&buf){lines.push(buf);buf=ch}else buf=test}if(buf)lines.push(buf)});return lines}
@@ -35,5 +47,5 @@ async function renderProfileCard(ctx,w,h){ctx.fillStyle='#f7f4ff';ctx.fillRect(0
 async function renderQuestionCard(ctx,w,h){ctx.fillStyle='#f7f4ff';ctx.fillRect(0,0,w,h);const pad=48;ctx.fillStyle='#fff';ctx.strokeStyle='#ddd4ff';ctx.lineWidth=4;roundRect(ctx,pad,pad,w-pad*2,h-pad*2,42,true,true);ctx.fillStyle='#efeafd';roundRect(ctx,pad+24,pad+24,w-96,120,30,true,false);ctx.fillStyle='#5a4bb8';ctx.font='700 54px system-ui,-apple-system,sans-serif';ctx.textBaseline='middle';ctx.fillText('zeta 質問カード',pad+48,pad+84);drawSectionCard(ctx,84,220,470,220,'初めて話したキャラは？',state.question.firstCharacter,{maxFontSize:38});drawSectionCard(ctx,84,482,470,300,'zetaに欲しい新機能は？',state.question.featureRequest,{maxFontSize:32});drawSectionCard(ctx,602,220,514,260,'zetaを始めたきっかけ',state.question.reasonStarted,{maxFontSize:32});drawSectionCard(ctx,602,522,514,260,'運営に一言🥺',state.question.messageToOps,{maxFontSize:32});drawSectionCard(ctx,84,850,1032,702,'FREE SPACE',state.question.freeSpace,{maxFontSize:34,minFontSize:16,lineHeight:1.5})}
 async function renderCard(ctx,w,h){ctx.clearRect(0,0,w,h);if(state.activeTemplate==='profile')await renderProfileCard(ctx,w,h);else await renderQuestionCard(ctx,w,h)}
 async function buildExportCanvas(){const c=createCanvas(EXPORT_WIDTH,EXPORT_HEIGHT);await renderCard(c.getContext('2d'),EXPORT_WIDTH,EXPORT_HEIGHT);return c}
-async function renderPreview(){previewSizeLabel.textContent=`出力 ${EXPORT_WIDTH} × ${EXPORT_HEIGHT}`;await renderCard(previewCanvas.getContext('2d'),previewCanvas.width,previewCanvas.height)}
+async function renderPreview(){previewSizeLabel.textContent=`出力 ${EXPORT_WIDTH} × ${EXPORT_HEIGHT}`;try{await renderCard(previewCanvas.getContext('2d'),previewCanvas.width,previewCanvas.height)}catch(e){console.error(e)}}
 loadState();applyPresetFromWindow();fillForms();setTemplate(state.activeTemplate);renderPreview();
