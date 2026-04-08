@@ -4,7 +4,7 @@ const state={activeTemplate:'profile',style:{fontColor:'#23233a',fontFamily:'mar
 const DISABLE_PERSIST=Boolean(window.ZETA_DISABLE_PERSIST);
 const TEMPLATE_IMAGES={profile:'assets/template-profile.jpg',question:'assets/template-question.jpg'};
 const FONT_FAMILIES={maru:'"Hiragino Maru Gothic ProN","Hiragino Maru Gothic Pro","Yu Gothic","Hiragino Sans",sans-serif',gothic:'"Yu Gothic","Hiragino Sans",sans-serif',mincho:'"Hiragino Mincho ProN","Yu Mincho",serif'};
-const tabs=document.querySelectorAll('.tab'),questionForm=document.getElementById('question-form'),profileForm=document.getElementById('profile-form'),fontFamilySelect=document.getElementById('font-family-select'),fontColorInput=document.getElementById('font-color-input'),fontColorButton=document.getElementById('font-color-button'),fontColorPreview=document.getElementById('font-color-preview'),previewCanvas=document.getElementById('preview-canvas'),previewSizeLabel=document.getElementById('preview-size-label'),downloadBtn=document.getElementById('download-btn'),iosBtn=document.getElementById('ios-btn'),resetBtn=document.getElementById('reset-btn'),iosSaveArea=document.getElementById('ios-save-area'),iosSaveImage=document.getElementById('ios-save-image');
+const tabs=document.querySelectorAll('.tab'),questionForm=document.getElementById('question-form'),profileForm=document.getElementById('profile-form'),fontFamilySelect=document.getElementById('font-family-select'),fontColorInput=document.getElementById('font-color-input'),fontColorButton=document.getElementById('font-color-button'),fontColorPreview=document.getElementById('font-color-preview'),previewCanvas=document.getElementById('preview-canvas'),previewSizeLabel=document.getElementById('preview-size-label'),downloadBtn=document.getElementById('download-btn'),iosBtn=document.getElementById('ios-btn'),resetBtn=document.getElementById('reset-btn'),iosSaveModal=document.getElementById('ios-save-modal'),iosSaveClose=document.getElementById('ios-save-close'),iosSaveImage=document.getElementById('ios-save-image');
 const imageCache=new Map();
 const qs=(s,r=document)=>r.querySelector(s);
 function persist(){if(DISABLE_PERSIST)return;localStorage.setItem('zeta-cards-custom',JSON.stringify(state))}
@@ -20,7 +20,12 @@ if(fontColorInput)fontColorInput.addEventListener('input',e=>{state.style.fontCo
 if(fontFamilySelect)fontFamilySelect.addEventListener('change',e=>{state.style.fontFamily=e.target.value||'maru';updateColorPreview();persist();renderPreview()});
 resetBtn.addEventListener('click',()=>{if(!confirm('入力内容を消しますか？'))return;localStorage.removeItem('zeta-cards-custom');window.location.reload()});
 downloadBtn.addEventListener('click',async()=>{try{const canvas=await buildExportCanvas();await saveCanvas(canvas,`zeta-card-${state.activeTemplate}.png`)}catch(e){console.error(e);alert('保存に失敗しました。')}})
-iosBtn.addEventListener('click',async()=>{try{const canvas=await buildExportCanvas();iosSaveImage.src=canvas.toDataURL('image/png');iosSaveArea.classList.remove('hidden');iosSaveArea.scrollIntoView({behavior:'smooth',block:'start'})}catch(e){console.error(e);alert('PNG化に失敗しました。')}})
+function openIOSModal(){if(!iosSaveModal)return;iosSaveModal.classList.remove('hidden');document.body.classList.add('modal-open')}
+function closeIOSModal(){if(!iosSaveModal)return;iosSaveModal.classList.add('hidden');document.body.classList.remove('modal-open')}
+iosBtn.addEventListener('click',async()=>{try{const canvas=await buildExportCanvas();iosSaveImage.src=canvas.toDataURL('image/png');openIOSModal()}catch(e){console.error(e);alert('PNG化に失敗しました。')}})
+if(iosSaveClose)iosSaveClose.addEventListener('click',closeIOSModal);
+if(iosSaveModal)iosSaveModal.addEventListener('click',e=>{if(e.target===iosSaveModal)closeIOSModal()});
+window.addEventListener('keydown',e=>{if(e.key==='Escape')closeIOSModal()});
 window.addEventListener('resize',renderPreview);
 function readFileAsDataURL(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
 function isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)}
